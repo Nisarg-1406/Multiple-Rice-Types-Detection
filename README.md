@@ -32,5 +32,26 @@ This project aims for the detecting the multiple rice types in the single image.
     !python generate_tfrecord.py --csv_input=data/annotations/train_labels.csv --output_path=data/annotations/train.record --img_path=data/Images/train --label_map data/annotations/label_map.pbtxt
     !python generate_tfrecord.py --csv_input=data/annotations/test_labels.csv --output_path=data/annotations/test.record --img_path=data/Images/test --label_map data/annotations/label_map.pbtxt
     ```
-    
- TO BE CONTINUE...:)
+
+* Now to download the Mobilenet SSD v2 Model and then we would be setting TensorFlow pretrained model checkpoint for better proecessing of the model
+  ```
+  fine_tune_checkpoint = os.path.join(DEST_DIR, "model.ckpt")
+  fine_tune_checkpoint    
+  ```
+ 
+* Then we would be Configuring a Training Pipeline, so first we would be joining the pipeline file to already existing folder of `/content/models/research/object_detection/samples/configs/`, giving the name - `pipeline_fname` and then with use of `assert` we would be checking if `pipeline_fname` exist or not. The `assert` statement simply takes input a boolean condition, which when returns true doesn’t return anything, but if it is computed to be false, then it raises an AssertionError along with the optional message provided. So here the error message is printed using `.format()` in python. `str.format()` is one of the string formatting methods in Python3, which allows multiple substitutions and value formatting. This method lets us concatenate elements within a string through positional formatting. Its syntax is `Syntax : { } .format(value)` -> (value) : Can be an integer, floating point numeric constant, string, characters or even variables.
+    ```
+    import os
+  	pipeline_fname = os.path.join('/content/models/research/object_detection/samples/configs/', pipeline_file)
+    assert os.path.isfile(pipeline_fname), '`{}` not exist'.format(pipeline_fname)
+    ```
+
+* Now we need to define the `labelmap` - In a computer vision dataset, it is common to have annotations referring to class labels. Here for the different types of rice, the class labels include `shapes, colors, size`. In order to annotate an image, an image annotation file will often define the annotations specific to a particular image. In the case where the annotation file does not specify class labels, a label map is referenced to look up the class name. The label map is the separate source of record for class annotations. So first we import the label_map_util - the inbuilt function. Label maps map indices to category names, so that when our convolution network predicts `1`, we know that this corresponds to `Basmati`. So we convert the label map to categories and then we get the category index with the categories and at last we calculate the len of the category indexes as keys. 
+    ```
+    def get_num_classes(pbtxt_fname):
+    from object_detection.utils import label_map_util
+    label_map = label_map_util.load_labelmap(pbtxt_fname)
+    categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=90, use_display_name=True)
+    category_index = label_map_util.create_category_index(categories)
+    return len(category_index.keys())
+    ```
