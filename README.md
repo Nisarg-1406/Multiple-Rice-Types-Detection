@@ -55,3 +55,5 @@ This project aims for the detecting the multiple rice types in the single image.
     category_index = label_map_util.create_category_index(categories)
     return len(category_index.keys())
     ```
+
+TO BE CONTINUE:)
