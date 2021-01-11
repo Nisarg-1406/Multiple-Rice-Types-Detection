@@ -121,3 +121,19 @@ This project aims for the detecting the multiple rice types in the single image.
     
     files.download(pipeline_fname)
     ```
+
+* We will first define the Path to frozen detection graph in `PATH_TO_CKPT` as this is the actual model that is used for the object detection. Then we would be setting the List of the strings that is used to add correct label for each box using `PATH_TO_LABELS = label_map_pbtxt_fname`. Now comes the main part of **Texting the code on the validation data**, so in this, just add images files to the `PATH_TO_TEST_IMAGES_DIR`. Then with use of `assert` we would be checking if `pb_fname` and `PATH_TO_LABELS` exist or not. Now with the help of `glob` module, I would be retriving files/pathnames matching a specified pattern. The pattern rules of glob follow standard Unix path expansion rules. It is also predicted that according to benchmarks it is faster than other methods to match pathnames in directories. With glob, we can also use wildcards ('.', ?) apart from exact string search to make path retrieval more simple and convenient. As in this case we are using '.' then its easy to retrive that Path. Finally, we would be checking if `TEST_IMAGE_PATHS` exist or not. If it exist then we would print that Path in the output, and if it does not exist then with the help of `.format()`, we would print that `No image found in PATH_TO_TEST_IMAGES_DIR`. Existing of the path is checked with the help that `len(TEST_IMAGE_PATHS) > 0` or not.
+    ```
+    import os
+    import glob
+    PATH_TO_CKPT = pb_fname
+    PATH_TO_LABELS = label_map_pbtxt_fname
+    PATH_TO_TEST_IMAGES_DIR =  os.path.join('/content/drive/My Drive/multiple rice detection/data/Images/', "test_ri")
+    assert os.path.isfile(pb_fname)
+    assert os.path.isfile(PATH_TO_LABELS)
+    TEST_IMAGE_PATHS = glob.glob(os.path.join(PATH_TO_TEST_IMAGES_DIR, "*.*"))
+    assert len(TEST_IMAGE_PATHS) > 0, 'No image found in `{}`.'.format(PATH_TO_TEST_IMAGES_DIR)
+    print(TEST_IMAGE_PATHS)
+    ```
+    
+ TO BE CONTINUE:)
