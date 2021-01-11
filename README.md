@@ -56,4 +56,19 @@ This project aims for the detecting the multiple rice types in the single image.
     return len(category_index.keys())
     ```
 
-TO BE CONTINUE:)
+* Now to start the training - We will do `model_dir = 'training/'` and if we want to remove the content if it is already present in the output directory i.e invlaid data then to use `!rm -rf {model_dir}`. Now we will make the directory - This means, `os.makedirs()` method in Python is used to create a directory recursively. That means while making leaf directory if any intermediate-level directory is missing, os.makedirs() method will create them all. It defines the `path` and `directory exist or not`. Its syntax is `Syntax: os.makedirs(path, exist_ok = False)` - Path: A path-like object representing a file system path. A path-like object is either a string or bytes object representing a path. exist_ok (optional) : A default value `False` is used for this parameter. If the target directory already exists, if its value is false then OSError is raised otherwise not. For value True, it leaves target directory unaltered.
+    ```
+    model_dir = 'training/'
+    !rm -rf {model_dir}
+    os.makedirs(model_dir, exist_ok=True)
+    ```
+
+* Now comes the main part of training the model. we define `pipeline_config_path`, `model_dir`, `number of training steps`, `number of Evaluation steps` and `logtostderr`. As name suggest `logtostderr` sends the logs to STDERR i.e standard error file. This means : Every command could send it's output to one of two places: a) it could be valid output or b) it could be an error message. It does the same with the errors as it does with the standard output; it sends them directly to your terminal screen if their are any. 
+    ```
+    !python /content/models/research/object_detection/model_main.py \
+    --pipeline_config_path={pipeline_fname} \
+    --model_dir={model_dir} \
+    --alsologtostderr \
+    --num_train_steps={num_steps} \
+    --num_eval_steps={num_eval_steps}
+    ```
