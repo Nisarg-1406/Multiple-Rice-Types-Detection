@@ -72,3 +72,52 @@ This project aims for the detecting the multiple rice types in the single image.
     --num_train_steps={num_steps} \
     --num_eval_steps={num_eval_steps}
     ```
+    
+* Then will use `!ls {model_dir}` to convert it to the list. `model_dir` is used to check for the trained model. 
+
+* Now to do the work of Exporting a Trained Inference Graph. Once your training job is complete, you need to extract the newly trained inference graph, which will be later used to perform the object detection. So we define `input type` i.e `image tensor`, so Tensor(i.e. multidimensional array) is a natural representation for image and video. The resulted new research topic, called tensor image processing, offers new tools to exploit the multi-dimensional and intrinsic structures in image data. Another is `pipeline_config_path`, `output_directory` and `trained_checkpoint_prefix` where Checkpoints capture the exact value of all parameters used by a model. Checkpoints do not contain any description of the computation defined by the model and thus are typically only useful when source code that will use the saved parameter values is available.
+    ```
+    last_model_path = os.path.join(model_dir, last_model)
+    print(last_model_path)
+    !python /content/models/research/object_detection/export_inference_graph.py \
+        --input_type=image_tensor \
+        --pipeline_config_path={pipeline_fname} \
+        --output_directory={output_directory} \
+        --trained_checkpoint_prefix={last_model_path}
+    ```
+ 
+* When we defined Trained Inference Graph, we would be now joining the output directory along as with `frozen_inference_graph.pb` -> `frozen_inference_graph.pb`, is a frozen graph that cannot be trained anymore, it defines the graphdef and is actually a serialized graph. Also on output directory we would be abspath(output_directory), as `abspath(path)` returns a normalized absolutized version of the pathname path i.e output_directory. 
+    ```
+    import os
+    pb_fname = os.path.join(os.path.abspath(output_directory), "frozen_inference_graph.pb")
+    assert os.path.isfile(pb_fname), '`{}` not exist'.format(pb_fname) -----------------------> Explained in Above points :)
+    ```
+
+* Next is to do the Google Authentication as we are using Google colab for GPU purpose. This only needs to be done once in a notebook.
+    ```
+    # Install the PyDrive wrapper & import libraries.
+    # This only needs to be done once in a notebook.
+    !pip install -U -q PyDrive
+    from pydrive.auth import GoogleAuth
+    from pydrive.drive import GoogleDrive
+    from google.colab import auth
+    from oauth2client.client import GoogleCredentials
+
+    # Authenticate and create the PyDrive client.
+    # This only needs to be done once in a notebook.
+    auth.authenticate_user()
+    gauth = GoogleAuth()
+    gauth.credentials = GoogleCredentials.get_application_default()
+    drive = GoogleDrive(gauth)
+
+    fname = os.path.basename(pb_fname)
+    # Create & upload a text file.
+    uploaded = drive.CreateFile({'title': fname})
+    uploaded.SetContentFile(pb_fname)
+    uploaded.Upload()
+    
+    from google.colab import files
+    files.download(label_map_pbtxt_fname)
+    
+    files.download(pipeline_fname)
+    ```
