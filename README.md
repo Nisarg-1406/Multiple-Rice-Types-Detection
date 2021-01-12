@@ -136,4 +136,33 @@ This project aims for the detecting the multiple rice types in the single image.
     print(TEST_IMAGE_PATHS)
     ```
     
- TO BE CONTINUE:)
+* Now comes the part of detecting the object. First we would be importing the neccessary libraries. Then will do `sys.path.append("..")` as **notebook is stored in the object_detection folder.** So `sys.path` is a built-in variable within the `sys` module. It contains a list of directories that the interpreter will search in for the required module. As we are appending, So `append()` is a built-in function of sys module that can be used with path variable to add a specific path for interpreter to search. For displaying the image we would be using 3 below commands
+    ```
+    %matplotlib inline
+    import matplotlib.pyplot as plt
+    from PIL import Image
+    ```
+
+* Then will load `labelmap`, then in categories we would be converting the labelmap to categories and finally we would be creating the `category_index` (Explanation of all this terms is done above). Along with this we will **load a (frozen) Tensorflow model into memory**.
+    ```
+    label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
+    categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=num_classes, use_display_name=True)
+    category_index = label_map_util.create_category_index(categories)
+    
+    detection_graph = tf.Graph()
+    with detection_graph.as_default():
+    od_graph_def = tf.GraphDef()
+    with tf.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
+        serialized_graph = fid.read()
+        od_graph_def.ParseFromString(serialized_graph)
+        tf.import_graph_def(od_graph_def, name='')
+    ```
+    
+* We would be loading the image in the form of the numpy array where we would be getting the `im_width` and `im_height` from image size and finally we would be returning the numpy array and would be reshaping to 3D array by taking `im_width`, `im_height` and `dimension` which means there would be dimension numbers of sub-arrays. Also we would be setting the Size, in inches for the output images. Here taking `IMAGE_SIZE = (20, 15)`. 
+    ```
+    def load_image_into_numpy_array(image):
+    (im_width, im_height) = image.size
+    return np.array(image.getdata()).reshape((im_height, im_width, 3)).astype(np.uint8)
+    ```
+    
+ 
