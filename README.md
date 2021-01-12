@@ -165,4 +165,63 @@ This project aims for the detecting the multiple rice types in the single image.
     return np.array(image.getdata()).reshape((im_height, im_width, 3)).astype(np.uint8)
     ```
     
- 
+ * Now we would be defining the 5 parameters - `'num_detections', 'detection_boxes', 'detection_scores', 'detection_classes', 'detection_masks'` for only the single image. Now to get the handle of input and output tensor, we will use `ops = tf.get_default_graph().get_operations()`. Then we would create the tensor dictionary which would contain `'num_detections', 'detection_boxes', 'detection_scores', 'detection_classes', 'detection_masks'` as the key value. Then will check for the condition of `'detection_masks' in tensor_dict`, we are going to process the `detection_boxes` and `detection_masks` for the single image. So here we are using `detection_boxes = tf.squeeze(tensor_dict['detection_boxes'], [0])`, This tf.squeeze means - Given a tensor input, this operation returns a tensor of the same type with all dimensions of size 1 removed. If you don't want to remove all size 1 dimensions, you can remove specific size 1 dimensions by specifying axis. So here we are removing size 1 dimension of 1st axis (0th index). Same goes for `detection_mask`. We would calculate `real_num_detection` by `tf.cast(tensor_dict['num_detections'][0], tf.int32)` in which the operation casts x (in case of Tensor) or x.values (in case of SparseTensor) to dtype (destination type). Next is : Reframe is required to translate mask from box coordinates to image coordinates and fit the image size, For this it is implemented using `detection_masks_reframed = utils_ops.reframe_box_masks_to_image_masks(detection_masks, detection_boxes, image.shape[0], image.shape[1])` And at last we would add back the batch dimension for originilty by using `tensor_dict['detection_masks'] = tf.expand_dims(detection_masks_reframed, 0)`. Finally we would be converting all the outputs i.e `'detection_boxes', 'detection_scores', 'detection_classes', 'detection_masks'` that are in float32 numpy arrays, into appropriate types as required and returning the `output_idict`
+    ```
+    def run_inference_for_single_image(image, graph):
+    with graph.as_default():
+        with tf.Session() as sess:
+            # Get handles to input and output tensors
+            ops = tf.get_default_graph().get_operations()
+            all_tensor_names = {output.name for op in ops for output in op.outputs}
+            tensor_dict = {}
+            for key in [
+                'num_detections', 'detection_boxes', 'detection_scores',
+                'detection_classes', 'detection_masks'
+            ]:
+                tensor_name = key + ':0'
+                if tensor_name in all_tensor_names:
+                    tensor_dict[key] = tf.get_default_graph().get_tensor_by_name(tensor_name)
+            if 'detection_masks' in tensor_dict:
+                # The following processing is only for single image
+                detection_boxes = tf.squeeze(tensor_dict['detection_boxes'], [0])
+                detection_masks = tf.squeeze(tensor_dict['detection_masks'], [0])
+                # Reframe is required to translate mask from box coordinates to image coordinates and fit the image size.
+                real_num_detection = tf.cast(tensor_dict['num_detections'][0], tf.int32)
+                detection_masks_reframed = utils_ops.reframe_box_masks_to_image_masks(detection_masks, detection_boxes, image.shape[0], image.shape[1])
+                detection_masks_reframed = tf.cast(tf.greater(detection_masks_reframed, 0.9), tf.uint8)
+                # Follow the convention by adding back the batch dimension
+                tensor_dict['detection_masks'] = tf.expand_dims(detection_masks_reframed, 0)
+            image_tensor = tf.get_default_graph().get_tensor_by_name('image_tensor:0')
+            output_dict = sess.run(tensor_dict, feed_dict={image_tensor: np.expand_dims(image, 0)})
+
+            # all outputs are float32 numpy arrays, so convert types as appropriate
+            output_dict['num_detections'] = int(output_dict['num_detections'][0])
+            output_dict['detection_classes'] = output_dict['detection_classes'][0].astype(np.uint8)
+            output_dict['detection_boxes'] = output_dict['detection_boxes'][0]
+            output_dict['detection_scores'] = output_dict['detection_scores'][0]
+            if 'detection_masks' in output_dict:
+                output_dict['detection_masks'] = output_dict['detection_masks'][0]
+    return output_dict
+    ```
+
+* We would first open the image through `Image.open(image_path)`. Then we would be loading the image into numpy_array as the array based representation of the image will be used later in order to prepare the result image with boxes and labels on it. Then for actual detection we use the above function that I wrote - `run_inference_for_single_image`. And finally we visualize the boxes and labels on image array by different parameters i.e `detection_boxes, detection_classes, detection_scores` as the key. Finally ,we would be outputting the image with the `IMAGE_SIZE` that was decided earlier. 
+    ```
+    for image_path in TEST_IMAGE_PATHS:
+    image = Image.open(image_path)
+    # the array based representation of the image will be used later in order to prepare the
+    # result image with boxes and labels on it.
+    image_np = load_image_into_numpy_array(image)
+    output_dict = run_inference_for_single_image(image_np, detection_graph) # Actual detection.
+    # Visualization of the results of a detection.
+    vis_util.visualize_boxes_and_labels_on_image_array(
+        image_np,
+        output_dict['detection_boxes'],
+        output_dict['detection_classes'],
+        output_dict['detection_scores'],
+        category_index,
+        instance_masks=output_dict.get('detection_masks'),
+        use_normalized_coordinates=True,
+        line_thickness=8)
+    plt.figure(figsize=IMAGE_SIZE)
+    plt.imshow(image_np)
+    ```
