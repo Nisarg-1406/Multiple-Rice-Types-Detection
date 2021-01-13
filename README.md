@@ -226,6 +226,11 @@ This project aims for the detecting the multiple rice types in the single image.
     plt.imshow(image_np)
     ```
 
+Output Images - 
+
+<img src = "Images/Output_Image_Rice1.jpg" width = "700">
+<img src = "Images/Output_Image_Rice4.jpg" width = "700">
+
 ## About Me
 **IF YOU LIKED MY WORK, PLEASE HIT THE STAR BUTTON, AND IF POSSIBLE DO PLEASE SHARE, SO THAT COMMUNITY CAN GET BENIFIT OUT OF IT BEACUSE I AM EXLPANING EACH AND EVERY LINE OF CODE FOR EACH AND EVERY PROJECT OF MINE.**
 
