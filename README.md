@@ -4,6 +4,7 @@ On single image multiple rice types are being detected.
 ## Table of Contents - 
 * [About Project](#about-project)
 * [Detailed Explanation about Project](#detailed-explanation-about-project)
+* [Output Images](#output-images)
 * [About Me](#about-me)
 
 ## About Project
@@ -226,7 +227,7 @@ This project aims for the detecting the multiple rice types in the single image.
     plt.imshow(image_np)
     ```
 
-Output Images - 
+## Output Images
 
 <img src = "Images/Output_Image_Rice1.jpg" width = "700">
 <img src = "Images/Output_Image_Rice4.jpg" width = "700">
@@ -234,8 +235,8 @@ Output Images -
 ## About Me
 **IF YOU LIKED MY WORK, PLEASE HIT THE STAR BUTTON, AND IF POSSIBLE DO PLEASE SHARE, SO THAT COMMUNITY CAN GET BENIFIT OUT OF IT BEACUSE I AM EXLPANING EACH AND EVERY LINE OF CODE FOR EACH AND EVERY PROJECT OF MINE.**
 
-Also I am Solving **Algorithms and Data Structure Problems from more than 220 Days Without any off-Day and have solved more than 405 Questions on various topics and posting my solutions on Github Daily**. You can Visit my Profile of LeetCode here - **https://leetcode.com/Nisarg1406/**
+Also I am Solving **Algorithms and Data Structure Problems from more than 230 Days (33 Weeks) Without any off-Day and have solved more than 405 Questions on various topics and posting my solutions on Github Daily**. You can Visit my Profile of LeetCode here - **https://leetcode.com/Nisarg1406/**
 
-I am good at Algorithms and Data structure and I have good Projects in Machine learning and Deep Learning (Computer Vision). **I am and would be posting the detialed explantion of each and every project working**. I am activily looking for an Internhip in **Software development enginering (SDE) Domain and Machine learning Domain**.
+I am good at Algorithms and Data structure and I have good Projects in Machine learning and Deep Learning (Computer Vision). **I am and would be posting the detialed explantion of each and every project working**. I am activily looking for an Internhips in **Software development enginering (SDE) Domain and Machine learning Domain**.
 
 You can contact me on my mail ID - nisarg.mehta18@vit.edu OR nisargmehta2000@gmail.com and even Contact me on LinkedIn - https://www.linkedin.com/in/nisarg-mehta-4a378a185/
